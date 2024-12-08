@@ -36,7 +36,7 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
     queryKey: ['activities'],
     queryFn: async () => {
       return getActivities(userId, filterType);
-    }
+    },
   });
 
   useEffect(() => {

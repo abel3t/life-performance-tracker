@@ -14,7 +14,7 @@ export const createNewActivity = async (userId: string, activity: ICreateActivit
       type: activity.type,
       duration: activity.duration,
       description: activity.description || '',
-      date: toZonedTime(activity.date, 'Asia/Saigon'),
+      date: activity.date
     },
   });
 }
@@ -54,7 +54,7 @@ export const getActivities = async (userId: string, filterType: IReportFilterTyp
   });
 
   const groupActivities = activities.reduce((acc, activity) => {
-    const date = new Date(activity.date);
+    const date = toZonedTime(new Date(activity.date), 'Asia/Saigon') ;
   
     let dateFormat = "";
     switch (filterType) {
@@ -85,6 +85,7 @@ export const getActivities = async (userId: string, filterType: IReportFilterTyp
   
     return acc;
   }, {} as Record<string, number>);
+  
   
   return Object.entries(groupActivities).map(([date, point]) => ({
     date,
