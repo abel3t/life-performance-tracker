@@ -32,15 +32,17 @@ import { Input } from "@/components/ui/input";
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import ReportChart from "@/components/custom/ReportChart";
 import { ICreateActivity } from "@/types";
+import { toast } from "sonner";
 
 
 export default function Home() {
   const userId = '1j9zt48iey3wv2om7rsn0dkl';
   const [isOpen, setIsOpen] = useState(false);
+  const [, startCreateTransition] = useTransition();
 
   const mutation = useMutation({
     mutationFn: (activity: ICreateActivity) => {
@@ -68,16 +70,32 @@ export default function Home() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    mutation.mutate({
-      name: data.name,
-      type: data.type,
-      description: data.description,
-      duration: data.duration,
-      date: data.date,
-    });
+    const createActivity = async () => {
+      await mutation.mutate({
+        name: data.name,
+        type: data.type,
+        description: data.description,
+        duration: data.duration,
+        date: data.date,
+      });
+    };
 
-    form.reset();
-    setIsOpen(false);
+    startCreateTransition(() => {
+      toast.promise(createActivity(), {
+        loading: 'Đang thêm hoạt động...',
+        success: () => {
+          form.reset();
+          setIsOpen(false);
+
+          return 'Tạo hoạt động thành công!';
+        },
+        error: (error) => {
+          console.log('error', error);
+
+          return 'Tạo hoạt động thất bại!';
+        }
+      });
+    });
   };
 
   return (
@@ -176,8 +194,10 @@ export default function Home() {
                         <Input
                           {...field}
                           type="number" step={1} min={5} max={180} placeholder="Thời gian"
-                          onChange={(event) => field.onChange(parseInt(event.target.value) ?? 0)}
-                        />
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? "" : Number.parseInt(value) || 0);
+                          }} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -59,7 +59,7 @@ export const getActivities = async (userId: string, filterType: IReportFilterTyp
     let dateFormat = "";
     switch (filterType) {
       case "day":
-        dateFormat = format(date, "MM/dd/yyyy"); // Format as "10/22/2024"
+        dateFormat = format(date, "dd/MM"); // Format as "10/22/2024"
         break;
       case "week":
         dateFormat = `Tuần ${getISOWeek(date)}/${format(date, "yyyy")}`; // Format as "Tuần 48/2024"

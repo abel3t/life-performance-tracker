@@ -94,23 +94,15 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
-                if (filterType === "day") {
-                  return format(new Date(value), "dd/MM");
-                }
-
-                return value;
+                return value
               }}
             />
             <ChartTooltip
               content={
                 <ChartTooltipContent
                   className="w-[150px]"
-                  nameKey="views"
+                  nameKey="point"
                   labelFormatter={(value) => {
-                    if (filterType === "day") {
-                      return format(new Date(value), "dd/MM");
-                    }
-
                     return value;
                   }}
                 />
