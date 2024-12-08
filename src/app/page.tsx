@@ -82,151 +82,157 @@ export default function Home() {
 
   return (
     <div>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline">Open popover</Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-80">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên hoạt động</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Hoạt động" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <div className="p-1">
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <div className="flex items-center justify-end">
+            <PopoverTrigger asChild>
+              <Button variant="default">Thêm hoạt động</Button>
+            </PopoverTrigger>
+          </div>
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mô tả</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Hoạt động" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Loại</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        switch (value) {
-                          case "1x":
-                            field.onChange(ActivityType.X1);
-                            break;
-                          case "2x":
-                            field.onChange(ActivityType.X2);
-                            break;
-                          case "3x":
-                            field.onChange(ActivityType.X3);
-                            break;
-                          case "5x":
-                            field.onChange(ActivityType.X5);
-                            break;
-                          case "10x":
-                            field.onChange(ActivityType.X10);
-                            break;
-                        }
-                      }}
-                      defaultValue={'1x'}>
+          <PopoverContent className="w-80">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên hoạt động</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn loại" />
-                        </SelectTrigger>
+                        <Input placeholder="Tên hoạt động" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1x">1x</SelectItem>
-                        <SelectItem value="2x">2x</SelectItem>
-                        <SelectItem value="3x">3x</SelectItem>
-                        <SelectItem value="5x">5x</SelectItem>
-                        <SelectItem value="10x">10x</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Thời gian</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number" step={1} min={5} max={180} placeholder="Thời gian"
-                        onChange={(event) => field.onChange(parseInt(event.target.value) ?? 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mô tả</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Mô tả hoạt động" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Ngày</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "dd/MM/yyyy")
-                            ) : (
-                              <span>Chọn Ngày</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Loại</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          switch (value) {
+                            case "1x":
+                              field.onChange(ActivityType.X1);
+                              break;
+                            case "2x":
+                              field.onChange(ActivityType.X2);
+                              break;
+                            case "3x":
+                              field.onChange(ActivityType.X3);
+                              break;
+                            case "5x":
+                              field.onChange(ActivityType.X5);
+                              break;
+                            case "10x":
+                              field.onChange(ActivityType.X10);
+                              break;
                           }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        }}
+                        defaultValue={'1x'}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn loại" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1x">1x</SelectItem>
+                          <SelectItem value="2x">2x</SelectItem>
+                          <SelectItem value="3x">3x</SelectItem>
+                          <SelectItem value="5x">5x</SelectItem>
+                          <SelectItem value="10x">10x</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <Button type="submit">Gửi</Button>
-            </form>
-          </Form>
-        </PopoverContent>
-      </Popover>
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thời gian</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number" step={1} min={5} max={180} placeholder="Thời gian"
+                          onChange={(event) => field.onChange(parseInt(event.target.value) ?? 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Ngày</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "dd/MM/yyyy")
+                              ) : (
+                                <span>Chọn Ngày</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit">Gửi</Button>
+              </form>
+            </Form>
+          </PopoverContent>
+        </Popover>
+      </div>
+
 
       <ReportChart userId={userId} />
     </div>

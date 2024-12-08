@@ -58,10 +58,10 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
               <SelectValue placeholder="Chọn khung thời gian" />
             </SelectTrigger>
             <SelectContent >
-              <SelectItem value="day">Day</SelectItem>
-              <SelectItem value="week">Week</SelectItem>
-              <SelectItem value="month">Month</SelectItem>
-              <SelectItem value="year">Year</SelectItem>
+              <SelectItem value="day">Ngày</SelectItem>
+              <SelectItem value="week">Tuần</SelectItem>
+              <SelectItem value="month">Tháng</SelectItem>
+              <SelectItem value="year">Năm</SelectItem>
             </SelectContent>
           </Select>
         </div>
