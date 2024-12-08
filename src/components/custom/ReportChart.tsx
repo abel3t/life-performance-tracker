@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useState } from "react";
 import { IReportFilterType } from "@/types";
+import { format } from "date-fns";
 
 export default function ReportChart({ userId: userId }: { userId: string }) {
   const [filterType, setFilterType] = useState<IReportFilterType>("day");
@@ -34,7 +35,11 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
   const { data: activities, refetch } = useQuery({
     queryKey: ['activities'],
     queryFn: async () => {
-      return getActivities(userId, filterType);
+      const data = await getActivities(userId, filterType);
+
+      console.log(data);
+
+      return data;
     }
   });
 
@@ -44,7 +49,7 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
 
   return (
     <Card className="mx-1 mt-3">
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row px-2 md:px-5">
+      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-1 sm:flex-row px-2 md:px-5">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Biểu đồ:</CardTitle>
         </div>
@@ -94,10 +99,7 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
               minTickGap={32}
               tickFormatter={(value) => {
                 if (filterType === "day") {
-                  return new Date(value).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })
+                  return format(new Date(value), "dd/MM");
                 }
 
                 return value;
@@ -110,10 +112,7 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
                   nameKey="views"
                   labelFormatter={(value) => {
                     if (filterType === "day") {
-                      return new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })
+                      return format(new Date(value), "dd/MM");
                     }
 
                     return value;
