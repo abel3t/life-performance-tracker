@@ -1,101 +1,234 @@
-import Image from "next/image";
+'use client';
+
+import { createNewActivity } from "@/actions";
+import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+
+import { z } from "zod"
+import { ActivityType } from "@prisma/client";
+import { Input } from "@/components/ui/input";
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import ReportChart from "@/components/custom/ReportChart";
+import { ICreateActivity } from "@/types";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const userId = '1j9zt48iey3wv2om7rsn0dkl';
+  const [isOpen, setIsOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const mutation = useMutation({
+    mutationFn: (activity: ICreateActivity) => {
+      return createNewActivity(userId, activity);
+    },
+  });
+
+  const formSchema = z.object({
+    name: z.string().min(2).max(50),
+    type: z.nativeEnum(ActivityType),
+    description: z.string().max(100).optional(),
+    duration: z.number().min(5).max(180),
+    date: z.date(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      type: ActivityType.X1,
+      description: "",
+      duration: 5,
+      date: new Date(),
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    mutation.mutate({
+      name: data.name,
+      type: data.type,
+      description: data.description,
+      duration: data.duration,
+      date: data.date,
+    });
+
+    form.reset();
+    setIsOpen(false);
+  };
+
+  return (
+    <div>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline">Open popover</Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tên hoạt động</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Hoạt động" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mô tả</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Hoạt động" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        switch (value) {
+                          case "1x":
+                            field.onChange(ActivityType.X1);
+                            break;
+                          case "2x":
+                            field.onChange(ActivityType.X2);
+                            break;
+                          case "3x":
+                            field.onChange(ActivityType.X3);
+                            break;
+                          case "5x":
+                            field.onChange(ActivityType.X5);
+                            break;
+                          case "10x":
+                            field.onChange(ActivityType.X10);
+                            break;
+                        }
+                      }}
+                      defaultValue={'1x'}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn loại" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="1x">1x</SelectItem>
+                        <SelectItem value="2x">2x</SelectItem>
+                        <SelectItem value="3x">3x</SelectItem>
+                        <SelectItem value="5x">5x</SelectItem>
+                        <SelectItem value="10x">10x</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thời gian</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number" step={1} min={5} max={180} placeholder="Thời gian"
+                        onChange={(event) => field.onChange(parseInt(event.target.value) ?? 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Ngày</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "dd/MM/yyyy")
+                            ) : (
+                              <span>Chọn Ngày</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit">Gửi</Button>
+            </form>
+          </Form>
+        </PopoverContent>
+      </Popover>
+
+      <ReportChart userId={userId} />
     </div>
   );
 }
