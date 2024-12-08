@@ -4,7 +4,7 @@ import prisma from "./db/prisma";
 import { getPointFromActivityType } from "./lib/utils";
 import { toZonedTime } from 'date-fns-tz'
 import { ICreateActivity, IReportFilterType } from "./types";
-import { add, format, getISOWeek } from "date-fns";
+import { add, endOfDay, format, getISOWeek, startOfDay } from "date-fns";
 
 export const createNewActivity = async (userId: string, activity: ICreateActivity) => {
   await prisma.activity.create({
@@ -21,7 +21,7 @@ export const createNewActivity = async (userId: string, activity: ICreateActivit
 
 export const getActivities = async (userId: string, filterType: IReportFilterType) => {
   let from: Date;
-  let to: Date = new Date();
+  let to: Date = endOfDay(new Date());
 
   switch (filterType) {
     case "day":
@@ -37,6 +37,8 @@ export const getActivities = async (userId: string, filterType: IReportFilterTyp
       from = add(to, { days: -7 * 365 }); // 7 years ago
       break;
   }
+  
+  from = startOfDay(from);
 
   const activities = await prisma.activity.findMany({
     where: {

@@ -35,11 +35,7 @@ export default function ReportChart({ userId: userId }: { userId: string }) {
   const { data: activities, refetch } = useQuery({
     queryKey: ['activities'],
     queryFn: async () => {
-      const data = await getActivities(userId, filterType);
-
-      console.log(data);
-
-      return data;
+      return getActivities(userId, filterType);
     }
   });
 
